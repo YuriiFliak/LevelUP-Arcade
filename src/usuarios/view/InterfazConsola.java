@@ -1,3 +1,10 @@
+/**
+ *Clase que gestiona la interacción con el usuario por consola (menús, entradas y salidas)
+ *Autor: Yurii Fliak
+ *Version: 1.0
+ */
+
+
 package usuarios.view;
 
 import java.util.InputMismatchException;

@@ -1,3 +1,11 @@
+/**
+ * Clase para conectarse a la base de datos
+ * Autor: Yurii Fliak
+ * Version: 1.0
+ */
+
+
+
 package usuarios.dao;
 
 import java.sql.Connection;
