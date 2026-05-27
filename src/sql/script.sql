@@ -91,4 +91,8 @@ CREATE TABLE usuario (
     rol ENUM('ADMIN', 'EMPLEADO')
 );
 
-drop table usuario;
+INSERT INTO usuario (nombre, contrasena, rol)
+VALUES ('admin', SHA2('admin', 256), 'ADMIN');
+
+INSERT INTO usuario (nombre, contrasena, rol)
+VALUES ('empleado', SHA2('empl123', 256), 'EMPLEADO');

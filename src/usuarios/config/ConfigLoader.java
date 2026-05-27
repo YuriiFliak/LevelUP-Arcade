@@ -4,8 +4,9 @@
  * Version: 1.0
  */
 package usuarios.config;
-import java.io.FileInputStream;
+
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Properties;
 
 public class ConfigLoader {
@@ -16,30 +17,36 @@ public class ConfigLoader {
 
         try {
 
-            FileInputStream file = new FileInputStream("config.properties");
+        	InputStream file =
+        	        ConfigLoader.class.getClassLoader()
+        	        .getResourceAsStream("config.properties");
 
-            properties.load(file);
+        	if (file == null) {
+        	    throw new RuntimeException("No se encuentra config.properties en el classpath");
+        	}
+
+        	properties.load(file);
 
         } catch (IOException e) {
 
             System.out.println("Error cargando config.properties");
-
             e.printStackTrace();
         }
     }
 
     public static String getUrl() {
-
         return properties.getProperty("db.url");
     }
 
     public static String getUser() {
-
         return properties.getProperty("db.user");
     }
 
     public static String getPassword() {
-
         return properties.getProperty("db.password");
+    }
+
+    public static String getOpenRouterApiKey() {
+        return properties.getProperty("openrouter.api.key");
     }
 }

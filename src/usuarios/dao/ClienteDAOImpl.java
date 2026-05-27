@@ -1,138 +1,126 @@
-/**
- * Implementación de la interfaz ClienteDAO.
- * Gestiona las operaciones CRUD de clientes en memoria.
- * Autor: Yurii Fliak
- * Version: 1.0
- */
 package usuarios.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import usuarios.model.Cliente;
+import java.sql.*;
+import java.util.*;
 
 public class ClienteDAOImpl implements ClienteDAO {
 
-    private List<Cliente> clientes = new ArrayList<>();
+    public void insertar(Cliente c) {
 
-    @Override
-    public void insertar(Cliente cliente) {
+        String sql = "INSERT INTO cliente(nombre, apellidos, email, telefono, direccion) VALUES (?, ?, ?, ?, ?)";
 
-        try {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            clientes.add(cliente);
+        	ps.setString(1, c.getNombre());
+        	ps.setString(2, c.getApellido());
+        	ps.setString(3, c.getEmail());
+        	ps.setString(4, c.getTelefono());
+        	ps.setString(5, c.getDireccion());
 
-            System.out.println("Cliente añadido");
+            ps.executeUpdate();
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al insertar cliente"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public List<Cliente> listar() {
 
-        return clientes;
+        List<Cliente> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM cliente";
+
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+
+                Cliente c = new Cliente();
+
+                c.setId(rs.getInt("id_cliente"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellidos"));
+                c.setEmail(rs.getString("email"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setDireccion(rs.getString("direccion"));
+
+                list.add(c);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     @Override
     public Cliente buscarPorId(int id) {
 
-        try {
+        String sql = "SELECT * FROM cliente WHERE id_cliente = ?";
 
-            for (Cliente c : clientes) {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-                if (c.getId() == id) {
+            ps.setInt(1, id);
 
-                    return c;
-                }
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                Cliente c = new Cliente();
+
+                c.setId(rs.getInt("id_cliente"));
+                c.setNombre(rs.getString("nombre"));
+                c.setApellido(rs.getString("apellido"));
+                c.setEmail(rs.getString("email"));
+                c.setTelefono(rs.getString("telefono"));
+                c.setDireccion(rs.getString("direccion"));
+
+                return c;
             }
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al buscar cliente"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    @Override
-    public void actualizar(Cliente cliente) {
+    public void actualizar(Cliente c) {
 
-        try {
+        String sql = "UPDATE cliente SET nombre=?, email=?, telefono=?, direccion=? WHERE id_cliente=?";
 
-            Cliente existente =
-                    buscarPorId(cliente.getId());
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (existente != null) {
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getEmail());
+            ps.setString(3, c.getTelefono());
+            ps.setString(4, c.getDireccion());
+            ps.setInt(5, c.getId());
 
-                existente.setNombre(
-                        cliente.getNombre()
-                );
+            ps.executeUpdate();
 
-                existente.setEmail(
-                        cliente.getEmail()
-                );
-
-                System.out.println(
-                        "Cliente actualizado"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Cliente no encontrado"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al actualizar cliente"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public void eliminar(int id) {
 
-        try {
+        String sql = "DELETE FROM cliente WHERE id_cliente=?";
 
-            Cliente cliente =
-                    buscarPorId(id);
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (cliente != null) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
 
-                clientes.remove(cliente);
-
-                System.out.println(
-                        "Cliente eliminado"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Cliente no encontrado"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al eliminar cliente"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

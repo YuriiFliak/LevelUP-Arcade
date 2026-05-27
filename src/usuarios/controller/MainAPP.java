@@ -1,393 +1,278 @@
+package usuarios.controller;
+
+import usuarios.dao.*;
+import usuarios.model.*;
+import usuarios.view.InterfazConsola;
+import usuarios.services.LlmService;
+
+
 /**
  * La clase main es el controlador principal de la aplicacion.
  * Se encarga en crear el bucle principal para las operaciones del menú
  * Autor: Yurii Fliak
- * Version: 1
+ * Version: 2.0
  */
-
-package usuarios.controller;
-
-import usuarios.dao.CategoriaDAO;
-import usuarios.dao.CategoriaDAOImpl;
-import usuarios.dao.ClienteDAO;
-import usuarios.dao.ClienteDAOImpl;
-import usuarios.dao.ProductoDAO;
-import usuarios.dao.ProductoDAOImpl;
-import usuarios.dao.ProveedorDAO;
-import usuarios.dao.ProveedorDAOImpl;
-
-import usuarios.model.Categoria;
-import usuarios.model.Cliente;
-import usuarios.model.Producto;
-import usuarios.model.Proveedor;
-
-import usuarios.view.InterfazConsola;
 
 public class MainAPP {
 
     public static void main(String[] args) {
 
-        // DAO
-
         ProductoDAO productoDAO = new ProductoDAOImpl();
-
         ClienteDAO clienteDAO = new ClienteDAOImpl();
-
         CategoriaDAO categoriaDAO = new CategoriaDAOImpl();
-
         ProveedorDAO proveedorDAO = new ProveedorDAOImpl();
-
-        // Vista
+        UsuarioDAO userDao = new UsuarioDAOImpl();
+       
 
         InterfazConsola vista = new InterfazConsola();
+        Usuario usuario = login(userDao, vista);
 
-        int opcionPrincipal;
+        if (usuario == null) {
+            return;
+        }
 
-        do {
-
-            opcionPrincipal = vista.mostrarMenuPrincipal();
-
-            switch (opcionPrincipal) {
-
-                // Productos
-
-                case 1:
-
-                    gestionarProductos(productoDAO, vista);
-
-                    break;
-
-                // Clientes
-
-                case 2:
-
-                    gestionarClientes(clienteDAO, vista);
-
-                    break;
-
-                // Categorias
-
-                case 3:
-
-                    gestionarCategorias(categoriaDAO, vista);
-
-                    break;
-
-                // Proveedores
-
-                case 4:
-
-                    gestionarProveedores(proveedorDAO, vista);
-
-                    break;
-
-                case 0:
-
-                    System.out.println("Saliendo del sistema...");
-
-                    break;
-
-                default:
-
-                    System.out.println("Opción incorrecta");
-            }
-
-        } while (opcionPrincipal != 0);
-    }
-
-    /**
-     * Gestiona todas las operaciones CRUD de productos.
-     *
-     * @param dao DAO de productos
-     * @param vista vista de consola
-     */
-
-    public static void gestionarProductos(
-            ProductoDAO dao,
-            InterfazConsola vista) {
-
-        int opcion;
+        int op;
 
         do {
 
-            opcion = vista.mostrarSubmenu();
+            op = vista.mostrarMenuPrincipal();
 
-            switch (opcion) {
+            switch (op) {
 
-                case 1:
+                case 1 -> gestionarProductos(productoDAO, vista);
+                case 2 -> gestionarClientes(clienteDAO, vista);
+                case 3 -> gestionarCategorias(categoriaDAO, vista);
+                case 4 -> gestionarProveedores(proveedorDAO, vista);
+                case 5 -> gestionarIA(vista);
 
-                    dao.insertar(crearProducto(vista));
+                case 0 -> System.out.println("Saliendo del sistema...");
 
-                    break;
-
-                case 2:
-
-                    vista.mostrarProductos(dao.listar());
-
-                    break;
-
-                case 3:
-
-                    Producto encontrado =
-                            dao.buscarPorId(vista.pedirId());
-
-                    System.out.println(encontrado);
-
-                    break;
-
-                case 4:
-
-                    dao.actualizar(crearProducto(vista));
-
-                    break;
-
-                case 5:
-
-                    dao.eliminar(vista.pedirId());
-
-                    break;
+                default -> System.out.println("Opción incorrecta");
             }
 
-        } while (opcion != 0);
+        } while (op != 0);
     }
 
-    /**
-     * Gestiona todas las operaciones CRUD de clientes.
-     *
-     * @param dao DAO de clientes
-     * @param vista vista de consola
-     */
+    // ========================= PRODUCTOS =========================
 
-    public static void gestionarClientes(
-            ClienteDAO dao,
-            InterfazConsola vista) {
+    public static void gestionarProductos(ProductoDAO dao, InterfazConsola v) {
 
-        int opcion;
+        int op;
 
         do {
 
-            opcion = vista.mostrarSubmenu();
+            op = v.mostrarSubmenu();
 
-            switch (opcion) {
+            switch (op) {
 
-                case 1:
+                case 1 -> dao.insertar(new Producto(
+                        v.pedirNombre(),
+                        v.pedirDescripcion(),
+                        v.pedirPrecio(),
+                        v.pedirStock(),
+                        v.pedirIdCategoria(),
+                        v.pedirIdProveedor()
+                ));
 
-                    dao.insertar(crearCliente(vista));
+                case 2 -> v.mostrarProductos(dao.listar());
 
-                    break;
+                case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
 
-                case 2:
+                case 4 -> dao.actualizar(new Producto(
+                        v.pedirId(),
+                        v.pedirNombre(),
+                        v.pedirDescripcion(),
+                        v.pedirPrecio(),
+                        v.pedirStock(),
+                        v.pedirIdCategoria(),
+                        v.pedirIdProveedor()
+                ));
 
-                    vista.mostrarClientes(dao.listar());
-
-                    break;
-
-                case 3:
-
-                    Cliente encontrado =
-                            dao.buscarPorId(vista.pedirId());
-
-                    System.out.println(encontrado);
-
-                    break;
-
-                case 4:
-
-                    dao.actualizar(crearCliente(vista));
-
-                    break;
-
-                case 5:
-
-                    dao.eliminar(vista.pedirId());
-
-                    break;
+                case 5 -> dao.eliminar(v.pedirId());
             }
 
-        } while (opcion != 0);
+        } while (op != 0);
     }
 
-    /**
-     * Gestiona todas las operaciones CRUD de categorías.
-     *
-     * @param dao DAO de categorías
-     * @param vista vista de consola
-     */
+    // ========================= CLIENTES =========================
 
-    public static void gestionarCategorias(
-            CategoriaDAO dao,
-            InterfazConsola vista) {
+    public static void gestionarClientes(ClienteDAO dao, InterfazConsola v) {
 
-        int opcion;
+        int op;
 
         do {
 
-            opcion = vista.mostrarSubmenu();
+            op = v.mostrarSubmenu();
 
-            switch (opcion) {
+            switch (op) {
 
-                case 1:
+                case 1 -> dao.insertar(new Cliente(
+                	    v.pedirNombre(),
+                	    v.pedirApellido(),
+                	    v.pedirEmail(),
+                	    v.pedirTelefono(),
+                	    v.pedirDireccion()
+                ));
 
-                    dao.insertar(crearCategoria(vista));
+                case 2 -> v.mostrarClientes(dao.listar());
 
-                    break;
+                case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
 
-                case 2:
+                case 4 -> dao.actualizar(new Cliente(
+                	    v.pedirNombre(),
+                	    v.pedirApellido(),
+                	    v.pedirEmail(),
+                	    v.pedirTelefono(),
+                	    v.pedirDireccion()
+                ));
 
-                    vista.mostrarCategorias(dao.listar());
-
-                    break;
-
-                case 3:
-
-                    Categoria encontrada =
-                            dao.buscarPorId(vista.pedirId());
-
-                    System.out.println(encontrada);
-
-                    break;
-
-                case 4:
-
-                    dao.actualizar(crearCategoria(vista));
-
-                    break;
-
-                case 5:
-
-                    dao.eliminar(vista.pedirId());
-
-                    break;
+                case 5 -> dao.eliminar(v.pedirId());
             }
 
-        } while (opcion != 0);
+        } while (op != 0);
     }
 
-    /**
-     * Gestiona todas las operaciones CRUD de proveedores.
-     *
-     * @param dao DAO de proveedores
-     * @param vista vista de consola
-     */
+    // ========================= CATEGORÍAS =========================
 
-    public static void gestionarProveedores(
-            ProveedorDAO dao,
-            InterfazConsola vista) {
+    public static void gestionarCategorias(CategoriaDAO dao, InterfazConsola v) {
 
-        int opcion;
+        int op;
 
         do {
 
-            opcion = vista.mostrarSubmenu();
+            op = v.mostrarSubmenu();
 
-            switch (opcion) {
+            switch (op) {
 
-                case 1:
+                case 1 -> dao.insertar(new Categoria(
+                        v.pedirNombre(),
+                        v.pedirDescripcion()
+                ));
 
-                    dao.insertar(crearProveedor(vista));
+                case 2 -> v.mostrarCategorias(dao.listar());
 
-                    break;
+                case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
 
-                case 2:
+                case 4 -> dao.actualizar(new Categoria(
+                        v.pedirId(),
+                        v.pedirNombre(),
+                        v.pedirDescripcion()
+                ));
 
-                    vista.mostrarProveedores(dao.listar());
-
-                    break;
-
-                case 3:
-
-                    Proveedor encontrado =
-                            dao.buscarPorId(vista.pedirId());
-
-                    System.out.println(encontrado);
-
-                    break;
-
-                case 4:
-
-                    dao.actualizar(crearProveedor(vista));
-
-                    break;
-
-                case 5:
-
-                    dao.eliminar(vista.pedirId());
-
-                    break;
+                case 5 -> dao.eliminar(v.pedirId());
             }
 
-        } while (opcion != 0);
+        } while (op != 0);
     }
 
-    /**
-     * Crea un objeto Producto solicitando los datos por consola.
-     *
-     * @param vista vista de consola
-     * @return objeto Producto
-     */
+    // ========================= PROVEEDORES =========================
 
-    public static Producto crearProducto(
-            InterfazConsola vista) {
+    public static void gestionarProveedores(ProveedorDAO dao, InterfazConsola v) {
 
-        return new Producto(
+        int op;
 
-                vista.pedirId(),
-                vista.pedirNombre(),
-                vista.pedirPrecio(),
-                vista.pedirStock()
-        );
+        do {
+
+            op = v.mostrarSubmenu();
+
+            switch (op) {
+
+                case 1 -> dao.insertar(new Proveedor(
+                	    v.pedirNombre(),
+                	    v.pedirTelefono(),
+                	    v.pedirEmailProveedor(),
+                	    v.pedirDireccion()
+                ));
+
+                case 2 -> v.mostrarProveedores(dao.listar());
+
+                case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
+
+                case 4 -> dao.actualizar(new Proveedor(
+                	    v.pedirNombre(),
+                	    v.pedirTelefono(),
+                	    v.pedirEmailProveedor(),
+                	    v.pedirDireccion()
+                ));
+
+                case 5 -> dao.eliminar(v.pedirId());
+            }
+
+        } while (op != 0);
     }
+    
+    
+ // ========================= INTELIGENCIA ARTIFICIAL =========================
 
-    /**
-     * Crea un objeto Cliente solicitando los datos por consola.
-     *
-     * @param vista vista de consola
-     * @return objeto Cliente
-     */
+    public static void gestionarIA(InterfazConsola v) {
 
-    public static Cliente crearCliente(
-            InterfazConsola vista) {
+        int op;
 
-        return new Cliente(
+        do {
 
-                vista.pedirId(),
-                vista.pedirNombre(),
-                vista.pedirEmail()
-        );
+            System.out.println("===== INTELIGENCIA ARTIFICIAL =====");
+            System.out.println("1. Generar descripción de producto");
+            System.out.println("2. Sugerir categoría de producto");
+            System.out.println("0. Volver");
+
+            op = v.pedirId();
+
+            switch (op) {
+
+                case 1 -> {
+
+                    String nombre = v.pedirNombre();
+
+                    String respuesta = LlmService.preguntarIA(
+                            "Genera una descripción comercial breve, atractiva y en ESPAÑOL del producto: "
+                                    + nombre
+                    );
+
+                    System.out.println("\n--- DESCRIPCIÓN IA ---");
+                    System.out.println(respuesta);
+                }
+
+                case 2 -> {
+
+                    String nombre = v.pedirNombre();
+
+                    String respuesta = LlmService.preguntarIA(
+                            "Responde SOLO con una categoría en ESPAÑOL para este producto, sin explicación: "
+                                    + nombre
+                    );
+
+                    System.out.println("\n--- CATEGORÍA IA ---");
+                    System.out.println(respuesta);
+                }
+
+                case 0 -> {
+                    System.out.println("Volviendo al menú principal...");
+                }
+
+                default -> {
+                    System.out.println("Opción no válida");
+                }
+            }
+
+        } while (op != 0);
     }
+    
+    // ============================= LOGIN ==============================
+    public static Usuario login(UsuarioDAO dao, InterfazConsola v) {
 
-    /**
-     * Crea un objeto Categoria solicitando los datos por consola.
-     *
-     * @param vista vista de consola
-     * @return objeto Categoria
-     */
+        System.out.println("===== LOGIN =====");
 
-    public static Categoria crearCategoria(
-            InterfazConsola vista) {
+        String user = v.pedirUsername();
+        String pass = v.pedirPassword();
 
-        return new Categoria(
+        Usuario u = dao.login(user, pass);
 
-                vista.pedirId(),
-                vista.pedirNombre()
-        );
-    }
+        if (u == null) {
+            System.out.println("Login incorrecto");
+            return null;
+        }
 
-    /**
-     * Crea un objeto Proveedor solicitando los datos por consola.
-     *
-     * @param vista vista de consola
-     * @return objeto Proveedor
-     */
-
-    public static Proveedor crearProveedor(
-            InterfazConsola vista) {
-
-        return new Proveedor(
-
-                vista.pedirId(),
-                vista.pedirNombre(),
-                vista.pedirTelefono()
-        );
+        System.out.println("Bienvenido " + u.getUsername());
+        return u;
     }
 }

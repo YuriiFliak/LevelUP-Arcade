@@ -1,134 +1,115 @@
-/**
- * Implementación de la interfaz CategoriaDAO.
- * Gestiona las operaciones CRUD de categorías en memoria.
- * Autor: Yurii Fliak
- * Version: 1.0
- */
 package usuarios.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import usuarios.model.Categoria;
+import java.sql.*;
+import java.util.*;
 
 public class CategoriaDAOImpl implements CategoriaDAO {
 
-    private List<Categoria> categorias = new ArrayList<>();
+    public void insertar(Categoria c) {
 
-    @Override
-    public void insertar(Categoria categoria) {
+        String sql = "INSERT INTO categoria(nombre, descripcion) VALUES (?, ?)";
 
-        try {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            categorias.add(categoria);
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getDescripcion());
 
-            System.out.println("Categoría añadida");
+            ps.executeUpdate();
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al insertar categoría"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public List<Categoria> listar() {
 
-        return categorias;
+        List<Categoria> list = new ArrayList<>();
+
+        String sql = "SELECT * FROM categoria";
+
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+
+            while (rs.next()) {
+
+                Categoria c = new Categoria();
+
+                c.setId(rs.getInt("id_categoria"));
+                c.setNombre(rs.getString("nombre"));
+                c.setDescripcion(rs.getString("descripcion"));
+
+                list.add(c);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return list;
     }
 
     @Override
     public Categoria buscarPorId(int id) {
 
-        try {
+        String sql = "SELECT * FROM categoria WHERE id_categoria = ?";
 
-            for (Categoria c : categorias) {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-                if (c.getId() == id) {
+            ps.setInt(1, id);
 
-                    return c;
-                }
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+
+                Categoria c = new Categoria();
+
+                c.setId(rs.getInt("id_categoria"));
+                c.setNombre(rs.getString("nombre"));
+                c.setDescripcion(rs.getString("descripcion"));
+
+                return c;
             }
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al buscar categoría"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
         return null;
     }
 
-    @Override
-    public void actualizar(Categoria categoria) {
+    public void actualizar(Categoria c) {
 
-        try {
+        String sql = "UPDATE categoria SET nombre=?, descripcion=? WHERE id_categoria=?";
 
-            Categoria existente =
-                    buscarPorId(categoria.getId());
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (existente != null) {
+            ps.setString(1, c.getNombre());
+            ps.setString(2, c.getDescripcion());
+            ps.setInt(3, c.getId());
 
-                existente.setNombre(
-                        categoria.getNombre()
-                );
+            ps.executeUpdate();
 
-                System.out.println(
-                        "Categoría actualizada"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Categoría no encontrada"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al actualizar categoría"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public void eliminar(int id) {
 
-        try {
+        String sql = "DELETE FROM categoria WHERE id_categoria=?";
 
-            Categoria categoria =
-                    buscarPorId(id);
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (categoria != null) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
 
-                categorias.remove(categoria);
-
-                System.out.println(
-                        "Categoría eliminada"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Categoría no encontrada"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al eliminar categoría"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

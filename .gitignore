@@ -1,0 +1,10 @@
+bin/
+dist/
+*.class
+
+src/config.properties
+bin/config.properties
+lib/config.properties
+.env
+*.key
+

@@ -1,138 +1,94 @@
-/**
- * Implementación de la interfaz ProveedorDAO.
- * Gestiona las operaciones CRUD de proveedores en memoria.
- * Autor: Yurii Fliak
- * Version: 1.0
- */
 package usuarios.dao;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import usuarios.model.Proveedor;
+import java.sql.*;
+import java.util.*;
 
 public class ProveedorDAOImpl implements ProveedorDAO {
 
-    private List<Proveedor> proveedores = new ArrayList<>();
+    public void insertar(Proveedor p) {
 
-    @Override
-    public void insertar(Proveedor proveedor) {
+        String sql = "INSERT INTO proveedor(nombre, telefono, email, direccion) VALUES (?, ?, ?, ?)";
 
-        try {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            proveedores.add(proveedor);
+        	ps.setString(1, p.getNombre());
+        	ps.setString(2, p.getTelefono());
+        	ps.setString(3, p.getEmail());
+        	ps.setString(4, p.getDireccion());
 
-            System.out.println("Proveedor añadido");
+            ps.executeUpdate();
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al insertar proveedor"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public List<Proveedor> listar() {
 
-        return proveedores;
-    }
+        List<Proveedor> list = new ArrayList<>();
 
-    @Override
-    public Proveedor buscarPorId(int id) {
+        String sql = "SELECT * FROM proveedor";
 
-        try {
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
 
-            for (Proveedor p : proveedores) {
+            while (rs.next()) {
 
-                if (p.getId() == id) {
+                Proveedor p = new Proveedor();
 
-                    return p;
-                }
+                p.setId(rs.getInt("id_proveedor"));
+                p.setNombre(rs.getString("nombre"));
+                p.setTelefono(rs.getString("telefono"));
+                p.setEmail(rs.getString("email"));
+                p.setDireccion(rs.getString("direccion"));
+
+                list.add(p);
             }
 
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al buscar proveedor"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 
+        return list;
+    }
+
+    public Proveedor buscarPorId(int id) {
         return null;
     }
 
-    @Override
-    public void actualizar(Proveedor proveedor) {
+    public void actualizar(Proveedor p) {
 
-        try {
+        String sql = "UPDATE proveedor SET nombre=?, telefono=?, direccion=? WHERE id_proveedor=?";
 
-            Proveedor existente =
-                    buscarPorId(proveedor.getId());
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (existente != null) {
+            ps.setString(1, p.getNombre());
+            ps.setString(2, p.getTelefono());
+            ps.setString(3, p.getDireccion());
+            ps.setInt(4, p.getId());
 
-                existente.setNombre(
-                        proveedor.getNombre()
-                );
+            ps.executeUpdate();
 
-                existente.setTelefono(
-                        proveedor.getTelefono()
-                );
-
-                System.out.println(
-                        "Proveedor actualizado"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Proveedor no encontrado"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al actualizar proveedor"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
     public void eliminar(int id) {
 
-        try {
+        String sql = "DELETE FROM proveedor WHERE id_proveedor=?";
 
-            Proveedor proveedor =
-                    buscarPorId(id);
+        try (Connection con = DatabaseConexion.getConnection();
+             PreparedStatement ps = con.prepareStatement(sql)) {
 
-            if (proveedor != null) {
+            ps.setInt(1, id);
+            ps.executeUpdate();
 
-                proveedores.remove(proveedor);
-
-                System.out.println(
-                        "Proveedor eliminado"
-                );
-
-            } else {
-
-                System.out.println(
-                        "Proveedor no encontrado"
-                );
-            }
-
-        } catch (Exception e) {
-
-            System.out.println(
-                    "Error al eliminar proveedor"
-            );
-
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }

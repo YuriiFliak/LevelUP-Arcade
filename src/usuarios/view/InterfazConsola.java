@@ -1,53 +1,42 @@
-/**
- *Clase que gestiona la interacción con el usuario por consola (menús, entradas y salidas)
- *Autor: Yurii Fliak
- *Version: 1.0
- */
-
-
 package usuarios.view;
 
-import java.util.InputMismatchException;
-import java.util.List;
-import java.util.Scanner;
+import usuarios.model.*;
+import java.util.*;
 
-import usuarios.model.Cliente;
-import usuarios.model.Producto;
-import usuarios.model.Categoria;
-import usuarios.model.Proveedor;
+/**
+ * Clase que gestiona la interacción con el usuario por consola (menús, entradas y salidas)
+ * Autor: Yurii Fliak
+ * Version: 2.1
+ */
 
 public class InterfazConsola {
 
     Scanner sc = new Scanner(System.in);
 
-    // Menú principal
+    // ================= MENÚ PRINCIPAL =================
 
     public int mostrarMenuPrincipal() {
 
         int opcion = -1;
 
-        while (opcion < 0 || opcion > 4) {
+        while (opcion < 0 || opcion > 5) {
 
             try {
 
                 System.out.println("===== LEVELUP ARCADE =====");
-
                 System.out.println("1. Gestionar productos");
                 System.out.println("2. Gestionar clientes");
                 System.out.println("3. Gestionar categorías");
                 System.out.println("4. Gestionar proveedores");
+                System.out.println("5. Inteligencia Artificial");
                 System.out.println("0. Salir");
 
                 System.out.print("Opción: ");
-
                 opcion = sc.nextInt();
 
             } catch (InputMismatchException e) {
 
-                System.out.println(
-                        "Error: introduce un número válido"
-                );
-
+                System.out.println("Error: introduce un número válido");
                 sc.nextLine();
             }
         }
@@ -55,7 +44,7 @@ public class InterfazConsola {
         return opcion;
     }
 
-    // Submenú
+    // ================= SUBMENÚ =================
 
     public int mostrarSubmenu() {
 
@@ -66,7 +55,6 @@ public class InterfazConsola {
             try {
 
                 System.out.println("---SUBMENÚ---");
-
                 System.out.println("1. Insertar");
                 System.out.println("2. Listar");
                 System.out.println("3. Buscar por ID");
@@ -75,15 +63,11 @@ public class InterfazConsola {
                 System.out.println("0. Volver");
 
                 System.out.print("Opción: ");
-
                 opcion = sc.nextInt();
 
             } catch (InputMismatchException e) {
 
-                System.out.println(
-                        "Error: introduce un número válido"
-                );
-
+                System.out.println("Error: introduce un número válido");
                 sc.nextLine();
             }
         }
@@ -91,219 +75,277 @@ public class InterfazConsola {
         return opcion;
     }
 
-    // Pedir datos
+    // ================= VALIDACIÓN BASE =================
+
+    private void clearBuffer() {
+        sc.nextLine();
+    }
+
+    // ================= PEDIR DATOS (SEGUROS) =================
 
     public int pedirId() {
 
-        int id = -1;
+        int id;
 
-        while (id < 0) {
+        while (true) {
 
             try {
-
                 System.out.print("ID: ");
-
                 id = sc.nextInt();
 
                 if (id < 0) {
-
-                    System.out.println(
-                            "El ID no puede ser negativo"
-                    );
+                    System.out.println("El ID no puede ser negativo");
+                    continue;
                 }
 
+                clearBuffer();
+                return id;
+
             } catch (InputMismatchException e) {
-
-                System.out.println(
-                        "Error: introduce un número válido"
-                );
-
-                sc.nextLine();
+                System.out.println("Error: introduce un número válido");
+                clearBuffer();
             }
         }
-
-        return id;
     }
 
     public String pedirNombre() {
 
-        sc.nextLine();
+        String nombre;
 
-        String nombre = "";
-
-        while (nombre.isBlank()) {
+        while (true) {
 
             System.out.print("Nombre: ");
-
             nombre = sc.nextLine();
 
-            if (nombre.isBlank()) {
+            if (!nombre.isBlank()) return nombre;
 
-                System.out.println(
-                        "El nombre no puede estar vacío"
-                );
-            }
+            System.out.println("El nombre no puede estar vacío");
         }
+    }
 
-        return nombre;
+    public String pedirApellido() {
+
+        String apellido;
+
+        while (true) {
+
+            System.out.print("Apellido: ");
+            apellido = sc.nextLine();
+
+            if (!apellido.isBlank()) return apellido;
+
+            System.out.println("El apellido no puede estar vacío");
+        }
+    }
+
+    public String pedirDescripcion() {
+
+        String desc;
+
+        while (true) {
+
+            System.out.print("Descripción: ");
+            desc = sc.nextLine();
+
+            if (!desc.isBlank()) return desc;
+
+            System.out.println("La descripción no puede estar vacía");
+        }
     }
 
     public double pedirPrecio() {
 
-        double precio = -1;
+        double precio;
 
-        while (precio < 0) {
+        while (true) {
 
             try {
-
                 System.out.print("Precio: ");
-
                 precio = sc.nextDouble();
 
                 if (precio < 0) {
-
-                    System.out.println(
-                            "El precio no puede ser negativo"
-                    );
+                    System.out.println("El precio no puede ser negativo");
+                    continue;
                 }
 
+                clearBuffer();
+                return precio;
+
             } catch (InputMismatchException e) {
-
-                System.out.println(
-                        "Error: introduce un número válido"
-                );
-
-                sc.nextLine();
+                System.out.println("Error: introduce un número válido");
+                clearBuffer();
             }
         }
-
-        return precio;
     }
 
     public int pedirStock() {
 
-        int stock = -1;
+        int stock;
 
-        while (stock < 0) {
+        while (true) {
 
             try {
-
                 System.out.print("Stock: ");
-
                 stock = sc.nextInt();
 
                 if (stock < 0) {
-
-                    System.out.println(
-                            "El stock no puede ser negativo"
-                    );
+                    System.out.println("El stock no puede ser negativo");
+                    continue;
                 }
 
+                clearBuffer();
+                return stock;
+
             } catch (InputMismatchException e) {
-
-                System.out.println(
-                        "Error: introduce un número válido"
-                );
-
-                sc.nextLine();
+                System.out.println("Error: introduce un número válido");
+                clearBuffer();
             }
         }
-
-        return stock;
     }
 
     public String pedirEmail() {
 
-        sc.nextLine();
+        String email;
 
-        String email = "";
-
-        while (!email.contains("@")) {
+        while (true) {
 
             System.out.print("Email: ");
-
             email = sc.nextLine();
 
-            if (!email.contains("@")) {
+            if (email.contains("@") && !email.isBlank()) return email;
 
-                System.out.println(
-                        "Email inválido"
-                );
-            }
+            System.out.println("Email inválido");
         }
-
-        return email;
     }
 
     public String pedirTelefono() {
 
-        sc.nextLine();
+        String tlf;
 
-        String telefono = "";
-
-        while (telefono.isBlank()) {
+        while (true) {
 
             System.out.print("Teléfono: ");
+            tlf = sc.nextLine();
 
-            telefono = sc.nextLine();
+            if (!tlf.isBlank()) return tlf;
 
-            if (telefono.isBlank()) {
+            System.out.println("El teléfono no puede estar vacío");
+        }
+    }
 
-                System.out.println(
-                        "El teléfono no puede estar vacío"
-                );
+    public String pedirDireccion() {
+
+        String dir;
+
+        while (true) {
+
+            System.out.print("Dirección: ");
+            dir = sc.nextLine();
+
+            if (!dir.isBlank()) return dir;
+
+            System.out.println("La dirección no puede estar vacía");
+        }
+    }
+
+    public int pedirIdCategoria() {
+
+        int id;
+
+        while (true) {
+
+            try {
+                System.out.print("ID Categoría: ");
+                id = sc.nextInt();
+
+                if (id < 0) {
+                    System.out.println("El ID no puede ser negativo");
+                    continue;
+                }
+
+                clearBuffer();
+                return id;
+
+            } catch (InputMismatchException e) {
+                System.out.println("Error: introduce un número válido");
+                clearBuffer();
             }
         }
-
-        return telefono;
     }
 
-    // Mostrar listas
+    public int pedirIdProveedor() {
 
-    public void mostrarProductos(List<Producto> productos) {
+        int id;
 
+        while (true) {
+
+            try {
+                System.out.print("ID Proveedor: ");
+                id = sc.nextInt();
+
+                if (id < 0) {
+                    System.out.println("El ID no puede ser negativo");
+                    continue;
+                }
+
+                clearBuffer();
+                return id;
+
+            } catch (InputMismatchException e) {
+                System.out.println("Error: introduce un número válido");
+                clearBuffer();
+            }
+        }
+    }
+
+    public String pedirEmailProveedor() {
+
+        String email;
+
+        while (true) {
+
+            System.out.print("Email proveedor: ");
+            email = sc.nextLine();
+
+            if (email.contains("@") && !email.isBlank()) return email;
+
+            System.out.println("Email inválido");
+        }
+    }
+
+    // ================= LISTADOS =================
+
+    public void mostrarProductos(List<Producto> lista) {
         System.out.println("--- LISTA PRODUCTOS ---");
-
-        for (Producto p : productos) {
-
-            System.out.println(p);
-        }
+        for (Producto p : lista) System.out.println(p);
     }
 
-    public void mostrarClientes(List<Cliente> clientes) {
-
+    public void mostrarClientes(List<Cliente> lista) {
         System.out.println("--- LISTA CLIENTES ---");
-
-        for (Cliente c : clientes) {
-
-            System.out.println(c);
-        }
+        for (Cliente c : lista) System.out.println(c);
     }
 
-    public void mostrarCategorias(List<Categoria> categorias) {
-
+    public void mostrarCategorias(List<Categoria> lista) {
         System.out.println("--- LISTA CATEGORÍAS ---");
-
-        for (Categoria c : categorias) {
-
-            System.out.println(c);
-        }
+        for (Categoria c : lista) System.out.println(c);
     }
 
-    public void mostrarProveedores(List<Proveedor> proveedores) {
-
-        System.out.println("\n--- LISTA PROVEEDORES ---");
-
-        for (Proveedor p : proveedores) {
-
-            System.out.println(p);
-        }
+    public void mostrarProveedores(List<Proveedor> lista) {
+        System.out.println("--- LISTA PROVEEDORES ---");
+        for (Proveedor p : lista) System.out.println(p);
     }
-
-    // Mensajes
-
-    public void mostrarMensaje(String mensaje) {
-
-        System.out.println(mensaje);
-    }
+    
+	// ================== USUARIOS ========================
+	public String pedirUsername() {
+	    sc.nextLine();
+	    System.out.print("Usuario: ");
+	    return sc.nextLine();
+	}
+	
+	public String pedirPassword() {
+	    System.out.print("Password: ");
+	    return sc.nextLine();
+	}
 }
+
+

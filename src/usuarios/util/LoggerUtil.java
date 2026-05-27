@@ -1,3 +1,10 @@
+/**
+ * // Clase utilitaria para registrar mensajes en un archivo de log con fecha y hora
+ * Autor: Yurii Fliak
+ * Version: 1.0
+ */
+
+
 package usuarios.util;
 
 import java.io.FileWriter;
