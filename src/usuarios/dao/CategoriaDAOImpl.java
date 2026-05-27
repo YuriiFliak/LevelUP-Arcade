@@ -16,7 +16,13 @@ public class CategoriaDAOImpl implements CategoriaDAO {
             ps.setString(1, c.getNombre());
             ps.setString(2, c.getDescripcion());
 
-            ps.executeUpdate();
+            int filas = ps.executeUpdate();
+
+            if (filas == 0) {
+                System.out.println("No existe una categoría con ID " + c.getId());
+            } else {
+                System.out.println("Categoría actualizada correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -93,6 +99,7 @@ public class CategoriaDAOImpl implements CategoriaDAO {
             ps.setInt(3, c.getId());
 
             ps.executeUpdate();
+            System.out.println("Categoría insertada correctamente");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -107,7 +114,13 @@ public class CategoriaDAOImpl implements CategoriaDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int filas = ps.executeUpdate();
+
+            if (filas == 0) {
+                System.out.println("No existe una categoría con ID " + id);
+            } else {
+                System.out.println("Categoría eliminada correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

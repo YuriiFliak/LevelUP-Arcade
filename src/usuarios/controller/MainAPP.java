@@ -119,6 +119,7 @@ public class MainAPP {
                 case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
 
                 case 4 -> dao.actualizar(new Cliente(
+                	    v.pedirId(),
                 	    v.pedirNombre(),
                 	    v.pedirApellido(),
                 	    v.pedirEmail(),
@@ -189,6 +190,7 @@ public class MainAPP {
                 case 3 -> System.out.println(dao.buscarPorId(v.pedirId()));
 
                 case 4 -> dao.actualizar(new Proveedor(
+                	    v.pedirId(),
                 	    v.pedirNombre(),
                 	    v.pedirTelefono(),
                 	    v.pedirEmailProveedor(),

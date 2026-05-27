@@ -33,11 +33,12 @@ public class InterfazConsola {
 
                 System.out.print("Opción: ");
                 opcion = sc.nextInt();
+                clearBuffer();
 
             } catch (InputMismatchException e) {
 
                 System.out.println("Error: introduce un número válido");
-                sc.nextLine();
+                clearBuffer();
             }
         }
 
@@ -64,11 +65,12 @@ public class InterfazConsola {
 
                 System.out.print("Opción: ");
                 opcion = sc.nextInt();
+                clearBuffer();
 
             } catch (InputMismatchException e) {
 
                 System.out.println("Error: introduce un número válido");
-                sc.nextLine();
+                clearBuffer();
             }
         }
 
@@ -337,14 +339,33 @@ public class InterfazConsola {
     
 	// ================== USUARIOS ========================
 	public String pedirUsername() {
-	    sc.nextLine();
-	    System.out.print("Usuario: ");
-	    return sc.nextLine();
+
+        String username;
+
+        while (true) {
+
+    	    System.out.print("Usuario: ");
+    	    username = sc.nextLine();
+
+            if (!username.isBlank()) return username;
+
+            System.out.println("El usuario no puede estar vacío");
+        }
 	}
 	
 	public String pedirPassword() {
-	    System.out.print("Password: ");
-	    return sc.nextLine();
+
+        String password;
+
+        while (true) {
+
+    	    System.out.print("Password: ");
+    	    password = sc.nextLine();
+
+            if (!password.isBlank()) return password;
+
+            System.out.println("La contraseña no puede estar vacía");
+        }
 	}
 }
 

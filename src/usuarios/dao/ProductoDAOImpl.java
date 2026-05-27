@@ -10,17 +10,32 @@ public class ProductoDAOImpl implements ProductoDAO {
 
         String sql = "INSERT INTO producto(nombre, descripcion, precio, stock, id_categoria, id_proveedor) VALUES (?, ?, ?, ?, ?, ?)";
 
-        try (Connection con = DatabaseConexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DatabaseConexion.getConnection()) {
 
-            ps.setString(1, p.getNombre());
-            ps.setString(2, p.getDescripcion());
-            ps.setDouble(3, p.getPrecio());
-            ps.setInt(4, p.getStock());
-            ps.setInt(5, p.getIdCategoria());
-            ps.setInt(6, p.getIdProveedor());
+            if (!existeId(con, "categoria", "id_categoria", p.getIdCategoria())) {
+                System.out.println("No existe una categoría con ID " + p.getIdCategoria());
+                System.out.println("Crea la categoría antes o usa un ID existente.");
+                return;
+            }
 
-            ps.executeUpdate();
+            if (!existeId(con, "proveedor", "id_proveedor", p.getIdProveedor())) {
+                System.out.println("No existe un proveedor con ID " + p.getIdProveedor());
+                System.out.println("Crea el proveedor antes o usa un ID existente.");
+                return;
+            }
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setString(1, p.getNombre());
+                ps.setString(2, p.getDescripcion());
+                ps.setDouble(3, p.getPrecio());
+                ps.setInt(4, p.getStock());
+                ps.setInt(5, p.getIdCategoria());
+                ps.setInt(6, p.getIdProveedor());
+
+                ps.executeUpdate();
+                System.out.println("Producto insertado correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -97,21 +112,55 @@ public class ProductoDAOImpl implements ProductoDAO {
 
         String sql = "UPDATE producto SET nombre=?, descripcion=?, precio=?, stock=?, id_categoria=?, id_proveedor=? WHERE id_producto=?";
 
-        try (Connection con = DatabaseConexion.getConnection();
-             PreparedStatement ps = con.prepareStatement(sql)) {
+        try (Connection con = DatabaseConexion.getConnection()) {
 
-            ps.setString(1, p.getNombre());
-            ps.setString(2, p.getDescripcion());
-            ps.setDouble(3, p.getPrecio());
-            ps.setInt(4, p.getStock());
-            ps.setInt(5, p.getIdCategoria());
-            ps.setInt(6, p.getIdProveedor());
-            ps.setInt(7, p.getId());
+            if (!existeId(con, "categoria", "id_categoria", p.getIdCategoria())) {
+                System.out.println("No existe una categoría con ID " + p.getIdCategoria());
+                System.out.println("Crea la categoría antes o usa un ID existente.");
+                return;
+            }
 
-            ps.executeUpdate();
+            if (!existeId(con, "proveedor", "id_proveedor", p.getIdProveedor())) {
+                System.out.println("No existe un proveedor con ID " + p.getIdProveedor());
+                System.out.println("Crea el proveedor antes o usa un ID existente.");
+                return;
+            }
+
+            try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+                ps.setString(1, p.getNombre());
+                ps.setString(2, p.getDescripcion());
+                ps.setDouble(3, p.getPrecio());
+                ps.setInt(4, p.getStock());
+                ps.setInt(5, p.getIdCategoria());
+                ps.setInt(6, p.getIdProveedor());
+                ps.setInt(7, p.getId());
+
+                int filas = ps.executeUpdate();
+
+                if (filas == 0) {
+                    System.out.println("No existe un producto con ID " + p.getId());
+                } else {
+                    System.out.println("Producto actualizado correctamente");
+                }
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
+        }
+    }
+
+    private boolean existeId(Connection con, String tabla, String columna, int id) throws SQLException {
+
+        String sql = "SELECT 1 FROM " + tabla + " WHERE " + columna + " = ?";
+
+        try (PreparedStatement ps = con.prepareStatement(sql)) {
+
+            ps.setInt(1, id);
+
+            try (ResultSet rs = ps.executeQuery()) {
+                return rs.next();
+            }
         }
     }
 
@@ -123,7 +172,13 @@ public class ProductoDAOImpl implements ProductoDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int filas = ps.executeUpdate();
+
+            if (filas == 0) {
+                System.out.println("No existe un producto con ID " + id);
+            } else {
+                System.out.println("Producto eliminado correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();

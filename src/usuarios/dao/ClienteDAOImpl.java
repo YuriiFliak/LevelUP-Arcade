@@ -20,6 +20,7 @@ public class ClienteDAOImpl implements ClienteDAO {
         	ps.setString(5, c.getDireccion());
 
             ps.executeUpdate();
+            System.out.println("Cliente insertado correctamente");
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -75,7 +76,7 @@ public class ClienteDAOImpl implements ClienteDAO {
 
                 c.setId(rs.getInt("id_cliente"));
                 c.setNombre(rs.getString("nombre"));
-                c.setApellido(rs.getString("apellido"));
+                c.setApellido(rs.getString("apellidos"));
                 c.setEmail(rs.getString("email"));
                 c.setTelefono(rs.getString("telefono"));
                 c.setDireccion(rs.getString("direccion"));
@@ -92,18 +93,25 @@ public class ClienteDAOImpl implements ClienteDAO {
 
     public void actualizar(Cliente c) {
 
-        String sql = "UPDATE cliente SET nombre=?, email=?, telefono=?, direccion=? WHERE id_cliente=?";
+        String sql = "UPDATE cliente SET nombre=?, apellidos=?, email=?, telefono=?, direccion=? WHERE id_cliente=?";
 
         try (Connection con = DatabaseConexion.getConnection();
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setString(1, c.getNombre());
-            ps.setString(2, c.getEmail());
-            ps.setString(3, c.getTelefono());
-            ps.setString(4, c.getDireccion());
-            ps.setInt(5, c.getId());
+            ps.setString(2, c.getApellido());
+            ps.setString(3, c.getEmail());
+            ps.setString(4, c.getTelefono());
+            ps.setString(5, c.getDireccion());
+            ps.setInt(6, c.getId());
 
-            ps.executeUpdate();
+            int filas = ps.executeUpdate();
+
+            if (filas == 0) {
+                System.out.println("No existe un cliente con ID " + c.getId());
+            } else {
+                System.out.println("Cliente actualizado correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -118,7 +126,13 @@ public class ClienteDAOImpl implements ClienteDAO {
              PreparedStatement ps = con.prepareStatement(sql)) {
 
             ps.setInt(1, id);
-            ps.executeUpdate();
+            int filas = ps.executeUpdate();
+
+            if (filas == 0) {
+                System.out.println("No existe un cliente con ID " + id);
+            } else {
+                System.out.println("Cliente eliminado correctamente");
+            }
 
         } catch (SQLException e) {
             e.printStackTrace();
