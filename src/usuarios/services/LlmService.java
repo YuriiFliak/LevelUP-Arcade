@@ -16,7 +16,7 @@ public class LlmService {
 
             String apiKey = obtenerApiKey();
 
-            if (apiKey == null || apiKey.isBlank()) {
+            if (apiKey == null || apiKey.isBlank() || apiKey.startsWith("PEGA_AQUI")) {
                 return "ERROR IA: falta configurar OPENROUTER_API_KEY";
             }
 

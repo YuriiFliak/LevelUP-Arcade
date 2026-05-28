@@ -5,6 +5,7 @@
  */
 package usuarios.config;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
@@ -17,15 +18,20 @@ public class ConfigLoader {
 
         try {
 
-        	InputStream file =
-        	        ConfigLoader.class.getClassLoader()
-        	        .getResourceAsStream("config.properties");
+            InputStream file;
 
-        	if (file == null) {
-        	    throw new RuntimeException("No se encuentra config.properties en el classpath");
-        	}
+            try {
+                file = new FileInputStream("config.properties");
+            } catch (IOException e) {
+                file = ConfigLoader.class.getClassLoader()
+                        .getResourceAsStream("config.properties");
+            }
 
-        	properties.load(file);
+            if (file == null) {
+                throw new RuntimeException("No se encuentra config.properties");
+            }
+
+            properties.load(file);
 
         } catch (IOException e) {
 
